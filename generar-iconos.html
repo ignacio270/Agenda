@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Generador de iconos</title></head>
+<body style="font-family:sans-serif;padding:24px;background:#f9f4ea">
+<h2 style="color:#8b2f1a">Generador de iconos — Agenda</h2>
+<p>Haz clic en cada botón para descargar el icono correspondiente.</p>
+<div style="display:flex;gap:24px;margin:24px 0;align-items:flex-end">
+  <div>
+    <canvas id="c192" width="192" height="192" style="border-radius:24px;display:block;margin-bottom:8px"></canvas>
+    <button onclick="download('c192','icon-192.png')" style="width:100%;padding:8px;cursor:pointer">Descargar icon-192.png</button>
+  </div>
+  <div>
+    <canvas id="c512" width="512" height="512" style="border-radius:64px;display:block;margin-bottom:8px"></canvas>
+    <button onclick="download('c512','icon-512.png')" style="width:100%;padding:8px;cursor:pointer">Descargar icon-512.png</button>
+  </div>
+</div>
+<script>
+function drawIcon(id) {
+  var c = document.getElementById(id);
+  var s = c.width;
+  var ctx = c.getContext('2d');
+  var r = s * 0.12;
+
+  // Fondo
+  ctx.fillStyle = '#8b2f1a';
+  roundRect(ctx, 0, 0, s, s, r);
+  ctx.fill();
+
+  // Cuerpo del calendario
+  var pad = s * 0.13;
+  var w = s - pad*2;
+  var h = s * 0.62;
+  var top = s * 0.28;
+  ctx.fillStyle = '#f9f4ea';
+  roundRect(ctx, pad, top, w, h, s*0.06);
+  ctx.fill();
+
+  // Cabecera del calendario
+  ctx.fillStyle = '#c97b3f';
+  roundRect(ctx, pad, top, w, h*0.28, s*0.06, true);
+  ctx.fill();
+
+  // Argollas
+  var ring1x = pad + w * 0.3;
+  var ring2x = pad + w * 0.7;
+  var ringy  = top;
+  var rr = s * 0.045;
+  [ring1x, ring2x].forEach(function(rx) {
+    ctx.fillStyle = '#f9f4ea';
+    ctx.beginPath();
+    ctx.arc(rx, ringy, rr*1.4, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#8b2f1a';
+    ctx.beginPath();
+    ctx.arc(rx, ringy, rr, 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  // Líneas de días (grid)
+  ctx.fillStyle = '#d4cbb5';
+  var gridTop = top + h * 0.36;
+  var cols = 4, rows = 3;
+  var cw = w / (cols+1);
+  var rh = (h * 0.58) / (rows+0.5);
+  for (var row=0; row<rows; row++) {
+    for (var col=0; col<cols; col++) {
+      var bx = pad + cw*(col+0.5) - s*0.04;
+      var by = gridTop + rh*(row+0.2);
+      ctx.fillRect(bx, by, s*0.085, s*0.055);
+    }
+  }
+
+  // Punto rojo "hoy"
+  ctx.fillStyle = '#8b2f1a';
+  ctx.beginPath();
+  ctx.arc(pad + cw*1.5 + s*0.005, gridTop + rh*0.45 + s*0.027, s*0.055, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#f9f4ea';
+  ctx.beginPath();
+  ctx.arc(pad + cw*1.5 + s*0.005, gridTop + rh*0.45 + s*0.027, s*0.03, 0, Math.PI*2);
+  ctx.fill();
+}
+
+function roundRect(ctx, x, y, w, h, r, topOnly) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  if (topOnly) {
+    ctx.lineTo(x+w, y+h);
+    ctx.lineTo(x, y+h);
+  } else {
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  }
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+function download(id, filename) {
+  var c = document.getElementById(id);
+  var a = document.createElement('a');
+  a.download = filename;
+  a.href = c.toDataURL('image/png');
+  a.click();
+}
+
+drawIcon('c192');
+drawIcon('c512');
+</script>
+</body>
+</html>
